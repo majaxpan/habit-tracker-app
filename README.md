@@ -9,11 +9,15 @@ Full-stack habit tracker built for learning.
 
 ## Done so far
 - Backend + frontend setup
-- REST API (GET, POST habits)
+- REST API for habits
+- Entry system added (create + fetch entries)
+- Get all entries + today’s entries endpoint
 - PostgreSQL connected
 - Basic project structure (routes, controllers)
+- Frontend displays habits
 
 ## Next
-- Daily habit tracking
-- Save habit entries per day
-- UI improvements
+- Frontend habit creation
+- Entries UI (today’s entries)
+- Edit entries
+- UI/UX improvements
