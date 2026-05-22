@@ -22,17 +22,22 @@ function App() {
       .then((res) => res.json())
       .then((data) => setHabits(data))
       .catch((err) => console.error(err));
-
-    fetch("http://localhost:5000/entries/today")
-      .then((res) => res.json())
-      .then((data) => setEntries(data))
-      .catch((err) => console.error(err));
   }, []);
 
   const entryMap = {};
   entries.forEach((e) => {
     entryMap[e.habit_id] = e;
   });
+
+  const fetchEntries = async (date) => {
+    const res = await fetch(`http://localhost:5000/entries?date=${date}`);
+    const data = await res.json();
+    setEntries(data);
+  };
+
+  useEffect(() => {
+    fetchEntries(selectedDate);
+  }, [selectedDate]);
 
   return (
     <div className="app">
@@ -182,14 +187,11 @@ function App() {
                             body: JSON.stringify({
                               habitId: habit.id,
                               value: "true",
+                              date: selectedDate,
                             }),
                           });
 
-                          const res = await fetch(
-                            "http://localhost:5000/entries/today",
-                          );
-                          const data = await res.json();
-                          setEntries(data);
+                          await fetchEntries(selectedDate);
                         }}
                       >
                         Log
@@ -240,14 +242,16 @@ function App() {
                               body: JSON.stringify({
                                 habitId: habit.id,
                                 value: inputValues[habit.id],
+                                date: selectedDate,
                               }),
                             });
 
-                            const res = await fetch(
-                              "http://localhost:5000/entries/today",
-                            );
-                            const data = await res.json();
-                            setEntries(data);
+                            await fetchEntries(selectedDate);
+
+                            setInputValues((prev) => ({
+                              ...prev,
+                              [habit.id]: "",
+                            }));
                           }}
                           style={{
                             padding: "4px 8px",
