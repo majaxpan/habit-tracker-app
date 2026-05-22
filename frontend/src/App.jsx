@@ -12,6 +12,11 @@ function App() {
   const [type, setType] = useState("boolean");
   const [unit, setUnit] = useState("");
 
+  //date
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+
   useEffect(() => {
     fetch("http://localhost:5000/habits")
       .then((res) => res.json())
@@ -33,6 +38,14 @@ function App() {
     <div className="app">
       <div>
         <h1>Habit tracker</h1>
+      </div>
+
+      <div>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+        />
       </div>
 
       <div
@@ -111,6 +124,8 @@ function App() {
           </button>
         </div>
       </div>
+
+      <div>Viewing: {selectedDate}</div>
 
       <div
         style={{
