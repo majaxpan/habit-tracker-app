@@ -173,12 +173,85 @@ function App() {
 
               <div>
                 {habit.type === "boolean" && (
-                  <div>
-                    {entry?.value === "true" ? (
-                      <div>Done ✓</div>
-                    ) : (
-                      <button
-                        onClick={async () => {
+                  <button
+                    onClick={async () => {
+                      const currentValue = entry?.value === "true";
+
+                      if (entry) {
+                        // UPDATE (toggle)
+                        await fetch(
+                          `http://localhost:5000/entries/${entry.id}`,
+                          {
+                            method: "PUT",
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                              value: (!currentValue).toString(),
+                            }),
+                          },
+                        );
+                      } else {
+                        // CREATE first time
+                        await fetch("http://localhost:5000/entries", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            habitId: habit.id,
+                            value: "true",
+                            date: selectedDate,
+                          }),
+                        });
+                      }
+
+                      await fetchEntries(selectedDate);
+                    }}
+                  >
+                    {entry?.value === "true" ? "Done ✓" : "Log"}
+                  </button>
+                )}
+
+                {habit.type === "measurable" && (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "6px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <input
+                      type="number"
+                      value={inputValues[habit.id] ?? entry?.value ?? ""}
+                      onChange={(e) => {
+                        setInputValues({
+                          ...inputValues,
+                          [habit.id]: e.target.value,
+                        });
+                      }}
+                    />
+
+                    <button
+                      onClick={async () => {
+                        const value = inputValues[habit.id] ?? entry?.value;
+
+                        if (entry) {
+                          // UPDATE existing entry
+                          await fetch(
+                            `http://localhost:5000/entries/${entry.id}`,
+                            {
+                              method: "PUT",
+                              headers: {
+                                "Content-Type": "application/json",
+                              },
+                              body: JSON.stringify({
+                                value,
+                              }),
+                            },
+                          );
+                        } else {
+                          // CREATE new entry
                           await fetch("http://localhost:5000/entries", {
                             method: "POST",
                             headers: {
@@ -186,82 +259,17 @@ function App() {
                             },
                             body: JSON.stringify({
                               habitId: habit.id,
-                              value: "true",
+                              value,
                               date: selectedDate,
                             }),
                           });
+                        }
 
-                          await fetchEntries(selectedDate);
-                        }}
-                      >
-                        Log
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {habit.type === "measurable" && (
-                  <div>
-                    {entry ? (
-                      <div>{`${entry.value} ${habit.unit}`}</div>
-                    ) : (
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "6px",
-                          alignItems: "center",
-                          flexWrap: "nowrap",
-                        }}
-                      >
-                        <input
-                          type="number"
-                          value={inputValues[habit.id] || ""}
-                          onChange={(e) => {
-                            setInputValues({
-                              ...inputValues,
-                              [habit.id]: e.target.value,
-                            });
-                          }}
-                          style={{
-                            width: "90px",
-                            padding: "6px",
-                            fontSize: "14px",
-                            border: "1px solid #ddd",
-                            borderRadius: "4px",
-                            outline: "none",
-                          }}
-                        />
-
-                        <button
-                          onClick={async () => {
-                            await fetch("http://localhost:5000/entries", {
-                              method: "POST",
-                              headers: {
-                                "Content-Type": "application/json",
-                              },
-                              body: JSON.stringify({
-                                habitId: habit.id,
-                                value: inputValues[habit.id],
-                                date: selectedDate,
-                              }),
-                            });
-
-                            await fetchEntries(selectedDate);
-
-                            setInputValues((prev) => ({
-                              ...prev,
-                              [habit.id]: "",
-                            }));
-                          }}
-                          style={{
-                            padding: "4px 8px",
-                            fontSize: "12px",
-                          }}
-                        >
-                          Save
-                        </button>
-                      </div>
-                    )}
+                        await fetchEntries(selectedDate);
+                      }}
+                    >
+                      {entry ? "Update" : "Save"}
+                    </button>
                   </div>
                 )}
               </div>

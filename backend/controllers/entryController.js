@@ -37,10 +37,27 @@ const createEntry = async (req, res) => {
     DO UPDATE SET value = EXCLUDED.value
     RETURNING id, habit_id, entry_date::text, value
     `,
-    [habitId, date, value]
+    [habitId, date, value],
   );
 
   res.status(201).json(result.rows[0]);
+};
+
+const editEntry = async (req, res) => {
+  const { entryId } = req.params;
+  const { value } = req.body;
+
+  const result = await pool.query(
+    `
+    UPDATE habit_entries
+    SET value = $1
+    WHERE id = $2
+    RETURNING id, habit_id, entry_date::text, value
+    `,
+    [value, entryId],
+  );
+
+  res.json(result.rows[0]);
 };
 
 module.exports = {
@@ -48,4 +65,5 @@ module.exports = {
   getTodaysEntries,
   getEntriesByDate,
   createEntry,
+  editEntry,
 };
