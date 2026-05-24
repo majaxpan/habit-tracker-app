@@ -39,6 +39,10 @@ function App() {
     fetchEntries(selectedDate);
   }, [selectedDate]);
 
+  useEffect(() => {
+    setInputValues({});
+  }, [selectedDate]);
+
   return (
     <div className="app">
       <div>
@@ -216,7 +220,7 @@ function App() {
                         entry?.value === "true" ? "#e6ffe6" : "#f5f5f5",
                     }}
                   >
-                    {entry?.value === "true" ? "✓" : "○"}
+                    {entry?.value === "true" ? "✓" : "X"}
                   </div>
                 )}
 
