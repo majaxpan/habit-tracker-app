@@ -173,12 +173,11 @@ function App() {
 
               <div>
                 {habit.type === "boolean" && (
-                  <button
+                  <div
                     onClick={async () => {
                       const currentValue = entry?.value === "true";
 
                       if (entry) {
-                        // UPDATE (toggle)
                         await fetch(
                           `http://localhost:5000/entries/${entry.id}`,
                           {
@@ -192,7 +191,6 @@ function App() {
                           },
                         );
                       } else {
-                        // CREATE first time
                         await fetch("http://localhost:5000/entries", {
                           method: "POST",
                           headers: {
@@ -208,9 +206,18 @@ function App() {
 
                       await fetchEntries(selectedDate);
                     }}
+                    style={{
+                      cursor: "pointer",
+                      userSelect: "none",
+                      padding: "6px 10px",
+                      borderRadius: "6px",
+                      display: "inline-block",
+                      background:
+                        entry?.value === "true" ? "#e6ffe6" : "#f5f5f5",
+                    }}
                   >
-                    {entry?.value === "true" ? "Done ✓" : "Log"}
-                  </button>
+                    {entry?.value === "true" ? "✓" : "○"}
+                  </div>
                 )}
 
                 {habit.type === "measurable" && (
