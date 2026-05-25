@@ -8,3 +8,29 @@
 * {
   box-sizing: border-box;
 }
+
+.card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 16px;
+  background: white;
+  margin-bottom: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.field label {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+input, select {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
