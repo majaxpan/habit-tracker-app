@@ -68,7 +68,7 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries }) {
             background: entry?.value === "true" ? "#d4f7d4" : "#f2f2f2",
           }}
         >
-          {entry?.value === "true" ? "✓" : "✖"}
+          {entry?.value === "true" ? "✓ Done" : "○ Not done"}
         </div>
       )}
 
