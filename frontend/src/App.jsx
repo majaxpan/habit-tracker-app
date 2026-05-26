@@ -69,6 +69,15 @@ function App() {
     setType("boolean");
   };
 
+  const handleDeleteHabit = async (habitId) => {
+    const res = await fetch(`http://localhost:5000/habits/${habitId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    setHabits((prev) => prev.filter((h) => h.id !== habitId));
+  };
+
   return (
     <div className="app">
       {/* HEADER */}
@@ -115,6 +124,7 @@ function App() {
             entry={entryMap[habit.id]}
             selectedDate={selectedDate}
             fetchEntries={fetchEntries}
+            onDelete={handleDeleteHabit}
           />
         ))}
       </section>

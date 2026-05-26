@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import MeasurableCell from "./MeasurableCell";
 
-function HabitRow({ habit, entry, selectedDate, fetchEntries }) {
+function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
   const toggleBoolean = async () => {
     const currentValue = entry?.value === "true";
 
@@ -56,6 +56,12 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries }) {
       {/* HABIT NAME */}
       <div style={{ width: "150px" }}>{habit.name}</div>
 
+      <div>
+        <button onClick={() => onDelete(habit.id)}> 
+          🗑️
+        </button>
+      </div>
+
       {/* BOOLEAN HABITS */}
       {habit.type === "boolean" && (
         <div
@@ -76,6 +82,7 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries }) {
       {habit.type === "measurable" && (
         <MeasurableCell entry={entry} onSave={updateMeasurable} />
       )}
+
     </div>
   );
 }
