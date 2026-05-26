@@ -23,7 +23,10 @@ function App() {
   useEffect(() => {
     fetch("http://localhost:5000/habits")
       .then((res) => res.json())
-      .then((data) => setHabits(data))
+      .then((data) => {
+        console.log(data);
+        setHabits(data);
+      })
       .catch((err) => console.error(err));
   }, []);
 

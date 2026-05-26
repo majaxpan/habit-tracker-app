@@ -57,9 +57,7 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
       <div style={{ width: "150px" }}>{habit.name}</div>
 
       <div>
-        <button onClick={() => onDelete(habit.id)}> 
-          🗑️
-        </button>
+        <button onClick={() => onDelete(habit.id)}>🗑️</button>
       </div>
 
       {/* BOOLEAN HABITS */}
@@ -71,18 +69,18 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
             userSelect: "none",
             padding: "6px 10px",
             borderRadius: "6px",
-            background: entry?.value === "true" ? "#d4f7d4" : "#f2f2f2",
+            backgroundColor: entry?.value === "true" ? "#d4f7d4" : "#f2f2f2",
+            color: entry?.value === "true" ? "#1b5e20" : "#777",
           }}
         >
-          {entry?.value === "true" ? "✓ Done" : "○ Not done"}
+          {entry?.value === "true" ? "✓" : "✓"}
         </div>
       )}
 
       {/* MEASURABLE HABITS */}
       {habit.type === "measurable" && (
-        <MeasurableCell entry={entry} onSave={updateMeasurable} />
+        <MeasurableCell entry={entry} unit={habit.unit} onSave={updateMeasurable} />
       )}
-
     </div>
   );
 }
