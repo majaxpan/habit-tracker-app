@@ -3,16 +3,16 @@ import { useEffect, useState } from "react";
 import MeasurableCell from "./MeasurableCell";
 
 function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
+  const isDone = entry?.value === "true";
+
   const toggleBoolean = async () => {
-    const currentValue = entry?.value === "true";
+    const currentValue = isDone;
 
     if (entry) {
       await fetch(`http://localhost:5000/entries/${entry.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          value: (!currentValue).toString(),
-        }),
+        body: JSON.stringify({ value: (!currentValue).toString() }),
       });
     } else {
       await fetch("http://localhost:5000/entries", {
@@ -52,35 +52,69 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
   };
 
   return (
-    <div style={{ display: "flex", gap: "20px", padding: "10px" }}>
-      {/* HABIT NAME */}
-      <div style={{ width: "150px" }}>{habit.name}</div>
+    <div
+      style={{
+        padding: "12px 14px",
+        borderBottom: "1px solid #eee",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+      }}
+    >
+      {/* HEADER */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ fontWeight: 600 }}>{habit.name}</div>
 
-      <div>
-        <button onClick={() => onDelete(habit.id)}>🗑️</button>
-      </div>
-
-      {/* BOOLEAN HABITS */}
-      {habit.type === "boolean" && (
-        <div
-          onClick={toggleBoolean}
+        <button
+          onClick={() => onDelete(habit.id)}
           style={{
+            background: "transparent",
+            border: "none",
             cursor: "pointer",
-            userSelect: "none",
-            padding: "6px 10px",
-            borderRadius: "6px",
-            backgroundColor: entry?.value === "true" ? "#d4f7d4" : "#f2f2f2",
-            color: entry?.value === "true" ? "#1b5e20" : "#777",
           }}
         >
-          {entry?.value === "true" ? "✓" : "✓"}
-        </div>
-      )}
+          🗑️
+        </button>
+      </div>
 
-      {/* MEASURABLE HABITS */}
-      {habit.type === "measurable" && (
-        <MeasurableCell entry={entry} unit={habit.unit} onSave={updateMeasurable} />
-      )}
+      {/* VALUE */}
+      <div>
+        {habit.type === "boolean" && (
+          <div
+            onClick={toggleBoolean}
+            style={{
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "34px",
+              minWidth: "44px",
+              padding: "0 10px",
+              borderRadius: "8px",
+              backgroundColor: isDone ? "#d4f7d4" : "#f2f2f2",
+              color: isDone ? "#1b5e20" : "#777",
+              fontWeight: 600,
+              userSelect: "none",
+            }}
+          >
+            ✓
+          </div>
+        )}
+
+        {habit.type === "measurable" && (
+          <MeasurableCell
+            entry={entry}
+            unit={habit.unit}
+            onSave={updateMeasurable}
+          />
+        )}
+      </div>
     </div>
   );
 }

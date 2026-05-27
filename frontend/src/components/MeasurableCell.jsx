@@ -8,7 +8,8 @@ function MeasurableCell({ entry, unit, onSave }) {
     setValue(entry?.value || "");
   }, [entry]);
 
-  // VIEW MODE
+  const hasValue = entry?.value != null && entry?.value !== "";
+
   if (!isEditing) {
     return (
       <div
@@ -16,15 +17,18 @@ function MeasurableCell({ entry, unit, onSave }) {
         style={{
           cursor: "pointer",
           display: "inline-flex",
-          alignItems: "baseline",
+          alignItems: "center",
           gap: "6px",
-          padding: "6px 10px",
-          borderRadius: "6px",
-          backgroundColor: entry?.value != null ? "#d4f7d4" : "#f2f2f2",
-          color: entry?.value != null ? "#1b5e20" : "#777",
+          height: "34px",
+          padding: "0 10px",
+          borderRadius: "8px",
+          backgroundColor: hasValue ? "#d4f7d4" : "#f2f2f2",
+          color: hasValue ? "#1b5e20" : "#777",
+          fontWeight: 500,
+          userSelect: "none",
         }}
       >
-        {entry?.value != null ? (
+        {hasValue ? (
           <>
             <strong>{entry.value}</strong>
             <span style={{ fontSize: "12px", opacity: 0.7 }}>{unit}</span>
@@ -36,14 +40,19 @@ function MeasurableCell({ entry, unit, onSave }) {
     );
   }
 
-  // EDIT MODE
   return (
-    <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <input
         type="number"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        style={{ width: "80px" }}
+        style={{
+          width: "70px",
+          height: "34px",
+          borderRadius: "8px",
+          border: "1px solid #ddd",
+          padding: "0 8px",
+        }}
       />
 
       <button
@@ -51,11 +60,24 @@ function MeasurableCell({ entry, unit, onSave }) {
           onSave(value);
           setIsEditing(false);
         }}
+        style={{
+          height: "34px",
+          borderRadius: "8px",
+        }}
       >
-        {entry ? "Update" : "Save"}
+        Save
       </button>
 
-      <button onClick={() => setIsEditing(false)}>Cancel</button>
+      <button
+        onClick={() => setIsEditing(false)}
+        style={{
+          height: "34px",
+          borderRadius: "8px",
+          background: "#f2f2f2",
+        }}
+      >
+        Cancel
+      </button>
     </div>
   );
 }

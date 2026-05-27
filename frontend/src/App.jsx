@@ -8,12 +8,13 @@ function App() {
   //habits + todays entries
   const [habits, setHabits] = useState([]);
   const [entries, setEntries] = useState([]);
-  const [inputValues, setInputValues] = useState({});
 
   //add habit form
   const [name, setName] = useState("");
   const [type, setType] = useState("boolean");
   const [unit, setUnit] = useState("");
+
+  const [isAddingHabit, setIsAddingHabit] = useState(false);
 
   //date
   const [selectedDate, setSelectedDate] = useState(
@@ -43,10 +44,6 @@ function App() {
 
   useEffect(() => {
     fetchEntries(selectedDate);
-  }, [selectedDate]);
-
-  useEffect(() => {
-    setInputValues({});
   }, [selectedDate]);
 
   const handleCreateHabit = async () => {
@@ -81,36 +78,94 @@ function App() {
     setHabits((prev) => prev.filter((h) => h.id !== habitId));
   };
 
+  const resetHabitForm = () => {
+    setName("");
+    setType("boolean");
+    setUnit("");
+  };
+
   return (
     <div className="app">
       {/* HEADER */}
-      <header style={{ marginBottom: "20px" }}>
-        <h1>Habit tracker</h1>
+      <header style={{ marginBottom: "16px" }}>
+        <h1 style={{ margin: 0 }}>Habit tracker</h1>
       </header>
 
-      {/* TOP CONTROLS */}
-      <section style={{ marginBottom: "20px" }}>
+      {/* CONTROL BAR */}
+      <section
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "10px",
+          marginBottom: "10px",
+        }}
+      >
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
+          style={{
+            flex: 1,
+            height: "36px",
+            borderRadius: "8px",
+            border: "1px solid #ddd",
+            padding: "0 10px",
+          }}
         />
 
-        <CreateHabitForm
-          name={name}
-          setName={setName}
-          type={type}
-          setType={setType}
-          unit={unit}
-          setUnit={setUnit}
-          onCreate={handleCreateHabit}
-        />
+        <button
+          onClick={() => setIsAddingHabit(true)}
+          style={{
+            width: "36px",
+            height: "36px",
+            borderRadius: "8px",
+            border: "none",
+            background: "#111",
+            color: "white",
+            fontSize: "18px",
+            cursor: "pointer",
+            transition: "0.15s ease",
+          }}
+        >
+          +
+        </button>
       </section>
 
-      {/* DATE INFO */}
-      <div style={{ marginBottom: "10px", opacity: 0.7 }}>
-        Viewing: {selectedDate}
-      </div>
+      {isAddingHabit && (
+        <div
+          className="modal-overlay"
+          onClick={() => {
+            setIsAddingHabit(false);
+            resetHabitForm();
+          }}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <CreateHabitForm
+              name={name}
+              setName={setName}
+              type={type}
+              setType={setType}
+              unit={unit}
+              setUnit={setUnit}
+              onCreate={() => {
+                handleCreateHabit();
+                setIsAddingHabit(false);
+                resetHabitForm();
+              }}
+            />
+
+            <button
+              onClick={() => {
+                setIsAddingHabit(false);
+                resetHabitForm();
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* HABITS LIST */}
       <section
