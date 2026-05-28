@@ -22,8 +22,8 @@ function MeasurableCell({ entry, unit, onSave }) {
           height: "34px",
           padding: "0 10px",
           borderRadius: "8px",
-          backgroundColor: hasValue ? "#d4f7d4" : "#f2f2f2",
-          color: hasValue ? "#1b5e20" : "#777",
+          backgroundColor: hasValue ? "var(--green-soft)" : "var(--bg-soft)",
+          color: hasValue ? "#var(--green-text)" : "var(--text-soft)",
           fontWeight: 500,
           userSelect: "none",
         }}
@@ -41,7 +41,7 @@ function MeasurableCell({ entry, unit, onSave }) {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px" }}>
       <input
         type="number"
         value={value}
@@ -73,7 +73,7 @@ function MeasurableCell({ entry, unit, onSave }) {
         style={{
           height: "34px",
           borderRadius: "8px",
-          background: "#f2f2f2",
+          background: "var(--bg-soft)",
         }}
       >
         Cancel

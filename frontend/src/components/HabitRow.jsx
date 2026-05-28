@@ -55,10 +55,10 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
     <div
       style={{
         padding: "12px 14px",
-        borderBottom: "1px solid #eee",
+        borderBottom: "1px solid var(--border)",
         display: "flex",
         flexDirection: "column",
-        gap: "10px",
+        gap: "12px",
       }}
     >
       {/* HEADER */}
@@ -67,16 +67,31 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          gap: "12px",
         }}
       >
-        <div style={{ fontWeight: 600 }}>{habit.name}</div>
+        <div
+          style={{
+            fontWeight: 600,
+            flex: 1,
+            minWidth: 0,
+            wordBreak: "break-word",
+          }}
+        >
+          {habit.name}
+        </div>
 
         <button
           onClick={() => onDelete(habit.id)}
           style={{
             background: "transparent",
             border: "none",
+
+            opacity: 0.6,
+
             cursor: "pointer",
+
+            flexShrink: 0,
           }}
         >
           🗑️
@@ -97,8 +112,8 @@ function HabitRow({ habit, entry, selectedDate, fetchEntries, onDelete }) {
               minWidth: "44px",
               padding: "0 10px",
               borderRadius: "8px",
-              backgroundColor: isDone ? "#d4f7d4" : "#f2f2f2",
-              color: isDone ? "#1b5e20" : "#777",
+              backgroundColor: isDone ? "var(--soft-green)" : "#f2f2f2",
+              color: isDone ? "var(--green-text)" : "var(--text-soft)",
               fontWeight: 600,
               userSelect: "none",
             }}
