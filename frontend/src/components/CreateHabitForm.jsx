@@ -33,7 +33,27 @@ function CreateHabitForm({
         </div>
       )}
 
-      <button onClick={onCreate}>Create</button>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginTop: "10px",
+        }}
+      >
+        <button
+          onClick={onCreate}
+          style={{
+            background: "#111",
+            color: "white",
+            padding: "8px 14px",
+            borderRadius: "8px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Create
+        </button>
+      </div>
     </div>
   );
 }

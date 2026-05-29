@@ -96,12 +96,15 @@ function App() {
   };
 
   const handleDeleteHabit = async (habitId) => {
-    const res = await fetch(`http://localhost:5000/habits/${habitId}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    });
+    const confirmed = window.confirm(
+      "Delete this habit?\n\nThis will also delete all related entries.",
+    );
 
-    //setHabits((prev) => prev.filter((h) => h.id !== habitId));
+    if (!confirmed) return;
+
+    await fetch(`http://localhost:5000/habits/${habitId}`, {
+      method: "DELETE",
+    });
 
     await fetchHabits();
   };
@@ -115,8 +118,25 @@ function App() {
   return (
     <div className="app">
       {/* HEADER */}
-      <header style={{ marginBottom: "16px" }}>
-        <h1 style={{ margin: 0 }}>Habit tracker</h1>
+      <header
+        style={{
+          marginBottom: "16px",
+          textAlign: "center",
+          paddingTop: "10px",
+          paddingBottom: "6px",
+          borderBottom: "1px solid #eee",
+        }}
+      >
+        <h1
+          style={{
+            margin: 0,
+            fontSize: "20px",
+            fontWeight: 600,
+            letterSpacing: "0.3px",
+          }}
+        >
+          Habit Tracker
+        </h1>
       </header>
 
       {/* CONTROL BAR */}
@@ -132,6 +152,7 @@ function App() {
         <input
           type="date"
           value={selectedDate}
+          max={new Date().toISOString().split("T")[0]}
           onChange={(e) => setSelectedDate(e.target.value)}
           style={{
             flex: 1,
@@ -175,7 +196,41 @@ function App() {
             setFormError("");
           }}
         >
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{ position: "relative" }}
+          >
+            <button
+              onClick={() => {
+                setIsAddingHabit(false);
+                resetHabitForm();
+                setFormError("");
+              }}
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                width: "28px",
+                height: "28px",
+                borderRadius: "6px",
+                border: "none",
+                background: "#f2f2f2",
+                cursor: "pointer",
+
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+
+                fontSize: "16px",
+                lineHeight: "1",
+                color: "#ffffff",
+                backgroundColor: "#a83737",
+              }}
+            >
+              ×
+            </button>
+
             <CreateHabitForm
               name={name}
               setName={setName}
@@ -192,6 +247,7 @@ function App() {
                 resetHabitForm();
               }}
             />
+
             {formError && (
               <div
                 style={{
@@ -207,16 +263,6 @@ function App() {
                 {formError}
               </div>
             )}
-
-            <button
-              onClick={() => {
-                setIsAddingHabit(false);
-                resetHabitForm();
-                setFormError("");
-              }}
-            >
-              Cancel
-            </button>
           </div>
         </div>
       )}
