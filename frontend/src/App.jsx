@@ -13,6 +13,7 @@ function App() {
   const [name, setName] = useState("");
   const [type, setType] = useState("boolean");
   const [unit, setUnit] = useState("");
+  const [formError, setFormError] = useState("");
 
   const [isAddingHabit, setIsAddingHabit] = useState(false);
 
@@ -46,11 +47,36 @@ function App() {
     fetchEntries(selectedDate);
   }, [selectedDate]);
 
-  const handleCreateHabit = async () => {
-    if (!name.trim()) return;
-    if (type === "measurable" && !unit.trim()) return;
+  const fetchHabits = async () => {
+    const res = await fetch("http://localhost:5000/habits");
+    const data = await res.json();
 
-    const res = await fetch("http://localhost:5000/habits", {
+    setHabits(data);
+  };
+
+  useEffect(() => {
+    fetchHabits();
+  }, []);
+
+  const handleCreateHabit = async () => {
+    setFormError("");
+
+    if (!name.trim() && type === "measurable" && !unit.trim()) {
+      setFormError("Fields cannot be empty!");
+      return false;
+    }
+
+    if (!name.trim()) {
+      setFormError("Habit name cannot be empty!");
+      return false;
+    }
+
+    if (type === "measurable" && !unit.trim()) {
+      setFormError("Unit is required for measurable habits!");
+      return false;
+    }
+
+    await fetch("http://localhost:5000/habits", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -60,13 +86,13 @@ function App() {
       }),
     });
 
-    const newHabit = await res.json();
-
-    setHabits((prev) => [...prev, newHabit]);
+    await fetchHabits();
 
     setName("");
     setUnit("");
     setType("boolean");
+
+    return true;
   };
 
   const handleDeleteHabit = async (habitId) => {
@@ -75,7 +101,9 @@ function App() {
       headers: { "Content-Type": "application/json" },
     });
 
-    setHabits((prev) => prev.filter((h) => h.id !== habitId));
+    //setHabits((prev) => prev.filter((h) => h.id !== habitId));
+
+    await fetchHabits();
   };
 
   const resetHabitForm = () => {
@@ -115,7 +143,13 @@ function App() {
         />
 
         <button
-          onClick={() => setIsAddingHabit(true)}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsAddingHabit(true);
+            resetHabitForm();
+            setFormError("");
+          }}
           style={{
             width: "36px",
             height: "36px",
@@ -138,6 +172,7 @@ function App() {
           onClick={() => {
             setIsAddingHabit(false);
             resetHabitForm();
+            setFormError("");
           }}
         >
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -148,17 +183,36 @@ function App() {
               setType={setType}
               unit={unit}
               setUnit={setUnit}
-              onCreate={() => {
-                handleCreateHabit();
+              onCreate={async () => {
+                const success = await handleCreateHabit();
+
+                if (!success) return;
+
                 setIsAddingHabit(false);
                 resetHabitForm();
               }}
             />
+            {formError && (
+              <div
+                style={{
+                  color: "#b00020",
+                  background: "#ffe8e8",
+                  padding: "8px 10px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  textAlign: "center",
+                  marginBottom: "10px",
+                }}
+              >
+                {formError}
+              </div>
+            )}
 
             <button
               onClick={() => {
                 setIsAddingHabit(false);
                 resetHabitForm();
+                setFormError("");
               }}
             >
               Cancel
@@ -168,24 +222,36 @@ function App() {
       )}
 
       {/* HABITS LIST */}
-      <section
-        style={{
-          border: "1px solid #eee",
-          borderRadius: "8px",
-          overflow: "hidden",
-        }}
-      >
-        {habits.map((habit) => (
-          <HabitRow
-            key={habit.id}
-            habit={habit}
-            entry={entryMap[habit.id]}
-            selectedDate={selectedDate}
-            fetchEntries={fetchEntries}
-            onDelete={handleDeleteHabit}
-          />
-        ))}
-      </section>
+      {habits.length === 0 ? (
+        <div
+          style={{
+            padding: "40px 20px",
+            textAlign: "center",
+            color: "#777",
+          }}
+        >
+          No habits yet.
+        </div>
+      ) : (
+        <section
+          style={{
+            border: "1px solid #eee",
+            borderRadius: "8px",
+            overflow: "hidden",
+          }}
+        >
+          {habits.map((habit) => (
+            <HabitRow
+              key={habit.id}
+              habit={habit}
+              entry={entryMap[habit.id]}
+              selectedDate={selectedDate}
+              fetchEntries={fetchEntries}
+              onDelete={handleDeleteHabit}
+            />
+          ))}
+        </section>
+      )}
     </div>
   );
 }
