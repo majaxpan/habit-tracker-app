@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
+import { apiFetch } from "./api";
+import { getToken, removeToken } from "./auth";
+
+import Login from "./components/Login";
+
 import CreateHabitForm from "./components/CreateHabitForm";
 import HabitRow from "./components/HabitRow";
 
 function App() {
-  //habits + todays entries
+  const [token, setToken] = useState(getToken());
+  const [email, setEmail] = useState(localStorage.getItem("email"));
+
   const [habits, setHabits] = useState([]);
   const [entries, setEntries] = useState([]);
 
-  //add habit form
   const [name, setName] = useState("");
   const [type, setType] = useState("boolean");
   const [unit, setUnit] = useState("");
@@ -17,20 +23,25 @@ function App() {
 
   const [isAddingHabit, setIsAddingHabit] = useState(false);
 
-  //date
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0],
   );
 
   useEffect(() => {
-    fetch("http://localhost:5000/habits")
+    if (!token) return;
+
+    fetch("http://localhost:5000/habits", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         setHabits(data);
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [token]);
 
   const entryMap = {};
   entries.forEach((e) => {
@@ -38,25 +49,32 @@ function App() {
   });
 
   const fetchEntries = async (date) => {
-    const res = await fetch(`http://localhost:5000/entries?date=${date}`);
+    const res = await apiFetch(`/entries?date=${date}`);
+
+    if (!res) return;
+
     const data = await res.json();
     setEntries(data);
   };
 
   useEffect(() => {
+    if (!token) return;
     fetchEntries(selectedDate);
-  }, [selectedDate]);
+  }, [selectedDate, token]);
 
   const fetchHabits = async () => {
-    const res = await fetch("http://localhost:5000/habits");
-    const data = await res.json();
+    const res = await apiFetch("/habits");
 
+    if (!res) return;
+
+    const data = await res.json();
     setHabits(data);
   };
 
   useEffect(() => {
+    if (!token) return;
     fetchHabits();
-  }, []);
+  }, [token]);
 
   const handleCreateHabit = async () => {
     setFormError("");
@@ -76,15 +94,16 @@ function App() {
       return false;
     }
 
-    await fetch("http://localhost:5000/habits", {
+    const res = await apiFetch("/habits", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
         type,
         unit: type === "boolean" ? null : unit,
       }),
     });
+
+    if (!res) return false;
 
     await fetchHabits();
 
@@ -102,9 +121,11 @@ function App() {
 
     if (!confirmed) return;
 
-    await fetch(`http://localhost:5000/habits/${habitId}`, {
+    const res = await apiFetch(`/habits/${habitId}`, {
       method: "DELETE",
     });
+
+    if (!res) return;
 
     await fetchHabits();
   };
@@ -115,28 +136,88 @@ function App() {
     setUnit("");
   };
 
+  useEffect(() => {
+    if (!token) {
+      setHabits([]);
+      setEntries([]);
+      setIsAddingHabit(false);
+      setFormError("");
+    }
+  }, [token]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setHabits([]);
+    setEntries([]);
+    setIsAddingHabit(false);
+    setFormError("");
+  };
+
+  if (!token) {
+    return <Login setToken={setToken} setEmail={setEmail} />;
+  }
+
   return (
     <div className="app">
       {/* HEADER */}
       <header
         style={{
           marginBottom: "16px",
-          textAlign: "center",
           paddingTop: "10px",
           paddingBottom: "6px",
           borderBottom: "1px solid #eee",
         }}
       >
-        <h1
+        {/* TOP ROW: user + logout */}
+        <div
           style={{
-            margin: 0,
-            fontSize: "20px",
-            fontWeight: 600,
-            letterSpacing: "0.3px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 10px",
+            fontSize: "13px",
+            color: "#666",
           }}
         >
-          Habit Tracker
-        </h1>
+          <div>
+            Logged in as: <strong>{email}</strong>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            style={{
+              padding: "6px 10px",
+              borderRadius: "6px",
+              border: "1px solid #ddd",
+              background: "white",
+              cursor: "pointer",
+              fontSize: "13px",
+            }}
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* TITLE ROW */}
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "8px",
+            marginBottom: "8px",
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "20px",
+              fontWeight: 600,
+              letterSpacing: "0.3px",
+            }}
+          >
+            Habit Tracker
+          </h1>
+        </div>
       </header>
 
       {/* CONTROL BAR */}
