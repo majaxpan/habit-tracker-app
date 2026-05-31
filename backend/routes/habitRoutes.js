@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const authMiddleware = require("../middleware/authMiddleware");
+
 const {
   getHabits,
   createHabit,
@@ -9,12 +11,12 @@ const {
 
 //GET /habits
 //GET MAPPING
-router.get("/", getHabits);
+router.get("/", authMiddleware, getHabits);
 
 // POST /habits
-router.post("/", createHabit);
+router.post("/", authMiddleware, createHabit);
 
 //DELETE /habit
-router.delete("/:habitId", deleteHabit);
+router.delete("/:habitId", authMiddleware, deleteHabit);
 
 module.exports = router;

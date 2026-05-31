@@ -3,6 +3,7 @@ const cors = require("cors");
 
 const habitRoutes = require("./routes/habitRoutes");
 const entryRoutes = require("./routes/entryRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 const pool = require("./db");
 
@@ -11,10 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-//REQUEST MAPPING("/habits")
-app.use("/habits", habitRoutes);
 
+app.use("/habits", habitRoutes);
 app.use("/entries", entryRoutes);
+app.use("/auth", authRoutes);
 
 const PORT = 5000;
 
